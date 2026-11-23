@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+APP_ROOT = File.expand_path("..", __dir__)
+Dir.chdir(APP_ROOT) do
+  abort "Создайте .env по .env.example и заполните пароль БД" unless File.exist?(".env")
+  system("bundle check") || system("bundle install", exception: true)
+  system("bin/rails db:migrate", exception: true)
+  system({ "RAILS_ENV" => "test" }, "bin/rails db:migrate", exception: true)
+  system("bin/rails db:seed", exception: true)
+  puts "kicktripp готов: bin/rails server -b 127.0.0.1"
+end

@@ -1,0 +1,196 @@
+{
+  "info": {
+    "name": "kicktripp API",
+    "description": "Сначала запустите seeds и запросы списка. Заполните ID в переменных коллекции реальными значениями. DELETE выполняйте на демонстрационной активности. Повторное создание с тем же email или заявкой даст 422.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:3000"
+    },
+    {
+      "key": "user_id",
+      "value": ""
+    },
+    {
+      "key": "trip_id",
+      "value": ""
+    },
+    {
+      "key": "activity_id",
+      "value": ""
+    },
+    {
+      "key": "participation_id",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "01 Путешественники",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/v1/users"
+      }
+    },
+    {
+      "name": "02 Поездки",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/v1/trips"
+      }
+    },
+    {
+      "name": "03 Фильтр поездок",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/v1/trips?title=2027&city=Tokyo"
+      }
+    },
+    {
+      "name": "04 Поездка",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/v1/trips/{{trip_id}}"
+      }
+    },
+    {
+      "name": "05 Активности поездки",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/v1/trips/{{trip_id}}/activities"
+      }
+    },
+    {
+      "name": "06 Создание путешественника",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/users",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Demo\",\n  \"email\": \"demo@example.test\",\n  \"interests\": \"walking\",\n  \"bio\": \"Путешествую самостоятельно\"\n}"
+        }
+      }
+    },
+    {
+      "name": "07 Обновление профиля",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/users/{{user_id}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"bio\": \"Люблю музеи\"\n}"
+        }
+      }
+    },
+    {
+      "name": "08 Заявки пользователя",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/v1/users/{{user_id}}/participations?read=true"
+      }
+    },
+    {
+      "name": "09 Создание заявки",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/participations",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user_id\": \"{{user_id}}\",\n  \"activity_id\": \"{{activity_id}}\"\n}"
+        }
+      }
+    },
+    {
+      "name": "10 Прочитать и пригласить",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/participations/{{participation_id}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"read\": true,\n  \"invited\": true\n}"
+        }
+      }
+    },
+    {
+      "name": "11 Фильтр приглашений",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/v1/participations?read=true&invited=true"
+      }
+    },
+    {
+      "name": "12 Бюджет",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/v1/trips/{{trip_id}}/summary"
+      }
+    },
+    {
+      "name": "13 Ошибка валидации",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/users",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Invalid\",\n  \"email\": \"bad\"\n}"
+        }
+      }
+    },
+    {
+      "name": "14 Отсутствующая запись",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/v1/trips/999999999"
+      }
+    },
+    {
+      "name": "15 Мягкое удаление активности",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{base_url}}/api/v1/trips/{{trip_id}}/activities/{{activity_id}}"
+      }
+    }
+  ]
+}

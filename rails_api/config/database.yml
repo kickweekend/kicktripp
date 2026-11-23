@@ -1,0 +1,16 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
+  host: <%= ENV.fetch("PGHOST", "127.0.0.1") %>
+  port: <%= ENV.fetch("PGPORT", 5432) %>
+  username: <%= ENV.fetch("PGUSER", "kicktripp_rails") %>
+  password: <%= ENV["PGPASSWORD"] %>
+development:
+  <<: *default
+  database: <%= ENV.fetch("RAILS_DEVELOPMENT_DATABASE", "kicktripp_rails_development") %>
+test:
+  <<: *default
+  database: <%= ENV.fetch("RAILS_TEST_DATABASE", "kicktripp_rails_test") %>
+production:
+  url: <%= ENV["DATABASE_URL"] %>

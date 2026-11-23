@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+**/.bundle/
+**/vendor/bundle/
+**/log/*
+**/tmp/*
+**/config/master.key
+**/config/credentials/*.key
+.local/
+.idea/
+*.swp
