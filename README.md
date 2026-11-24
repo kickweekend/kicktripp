@@ -1,6 +1,6 @@
 # kicktripp
 
-Добавлено отдельное [Sinatra-приложение](sinatra_api/README.md): маршруты и демонстрационные данные без БД. Запуск из sinatra_api: `bundle install`, затем `bundle exec rackup -o 127.0.0.1 -p 4567 config.ru`.
+[Sinatra API](sinatra_api/README.md) теперь реализует полный REST API на PostgreSQL/Sequel: те же сущности, CRUD, фильтры, бюджет, заявки и мягкое удаление, что в Rails. Порт 4567. [Команды и примеры запросов](sinatra_api/USAGE.md). Прежняя версия с данными в памяти сохранена тегом `sinatra-basics`.
 
 REST API для планирования путешествий на Ruby on Rails и PostgreSQL. Сервис хранит поездки, направления, места, активности, расходы и заявки участников. Возвращает JSON; пользовательского интерфейса нет.
 

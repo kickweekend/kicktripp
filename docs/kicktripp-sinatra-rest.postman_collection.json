@@ -1,0 +1,476 @@
+{
+  "info": {
+    "name": "kicktripp Sinatra — полный REST API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Запускайте запросы по порядку: создаются отдельные демонстрационные записи, ID сохраняются автоматически. Основные seeds не удаляются. В конце поездка и активность остаются мягко удалёнными; удаление владельца ожидаемо даёт 422."
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4567"
+    },
+    {
+      "key": "owner_id",
+      "value": ""
+    },
+    {
+      "key": "guest_id",
+      "value": ""
+    },
+    {
+      "key": "trip_id",
+      "value": ""
+    },
+    {
+      "key": "destination_id",
+      "value": ""
+    },
+    {
+      "key": "place_id",
+      "value": ""
+    },
+    {
+      "key": "activity_id",
+      "value": ""
+    },
+    {
+      "key": "expense_id",
+      "value": ""
+    },
+    {
+      "key": "participation_id",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "01 Список поездок",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/v1/trips"
+      }
+    },
+    {
+      "name": "02 Фильтры",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/v1/trips?title=2027&city=Tokyo"
+      }
+    },
+    {
+      "name": "03 Создать владельца",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/users",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Defense owner\",\n  \"email\": \"owner-{{$guid}}@example.test\",\n  \"interests\": \"museums\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) pm.collectionVariables.set(\"owner_id\", pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 Создать участника",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/users",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Defense guest\",\n  \"email\": \"guest-{{$guid}}@example.test\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) pm.collectionVariables.set(\"guest_id\", pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 Создать поездку",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/trips",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user_id\": \"{{owner_id}}\",\n  \"title\": \"Поездка для защиты\",\n  \"starts_on\": \"2027-06-01\",\n  \"ends_on\": \"2027-06-05\",\n  \"budget_amount\": \"15000.00\",\n  \"currency\": \"RUB\",\n  \"time_zone\": \"Europe/Moscow\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) pm.collectionVariables.set(\"trip_id\", pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 Направление",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/trips/{{trip_id}}/destinations",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"country\": \"Russia\",\n  \"city\": \"Kazan\",\n  \"arrival_on\": \"2027-06-01\",\n  \"departure_on\": \"2027-06-05\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) pm.collectionVariables.set(\"destination_id\", pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 Место",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/trips/{{trip_id}}/destinations/{{destination_id}}/places",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Кремль\",\n  \"category\": \"sight\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) pm.collectionVariables.set(\"place_id\", pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 Активность",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/trips/{{trip_id}}/activities",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"place_id\": \"{{place_id}}\",\n  \"title\": \"Прогулка\",\n  \"starts_at\": \"2027-06-02T10:00:00+03:00\",\n  \"ends_at\": \"2027-06-02T12:00:00+03:00\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) pm.collectionVariables.set(\"activity_id\", pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 Расход",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/trips/{{trip_id}}/expenses",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"activity_id\": \"{{activity_id}}\",\n  \"title\": \"Билет\",\n  \"category\": \"tickets\",\n  \"amount\": \"500.00\",\n  \"currency\": \"RUB\",\n  \"spent_on\": \"2027-06-02\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) pm.collectionVariables.set(\"expense_id\", pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 Заявка",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/participations",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user_id\": \"{{guest_id}}\",\n  \"activity_id\": \"{{activity_id}}\"\n}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) pm.collectionVariables.set(\"participation_id\", pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 Получить поездку",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/v1/trips/{{trip_id}}"
+      }
+    },
+    {
+      "name": "12 Бюджет",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/v1/trips/{{trip_id}}/summary"
+      }
+    },
+    {
+      "name": "13 Изменить название",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/trips/{{trip_id}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Название изменено\"\n}"
+        }
+      }
+    },
+    {
+      "name": "14 Завершить активность",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/trips/{{trip_id}}/activities/{{activity_id}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"completed\"\n}"
+        }
+      }
+    },
+    {
+      "name": "15 Обновить профиль",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/users/{{owner_id}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"bio\": \"Проверка профиля\"\n}"
+        }
+      }
+    },
+    {
+      "name": "16 Прочитать и пригласить",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/participations/{{participation_id}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"read\": true,\n  \"invited\": true\n}"
+        }
+      }
+    },
+    {
+      "name": "17 Заявки пользователя",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/v1/users/{{guest_id}}/participations?read=true&invited=true"
+      }
+    },
+    {
+      "name": "18 Участники активности",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/v1/activities/{{activity_id}}/users"
+      }
+    },
+    {
+      "name": "19 Ошибка валидации, 422",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{base_url}}/api/v1/users",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Bad\",\n  \"email\": \"bad\"\n}"
+        }
+      }
+    },
+    {
+      "name": "20 Нет записи, 404",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/v1/trips/999999999"
+      }
+    },
+    {
+      "name": "21 Удалить расход, 204",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{base_url}}/api/v1/trips/{{trip_id}}/expenses/{{expense_id}}"
+      }
+    },
+    {
+      "name": "22 Удалить заявку, 204",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{base_url}}/api/v1/participations/{{participation_id}}"
+      }
+    },
+    {
+      "name": "23 Удалить участника без зависимостей, 204",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{base_url}}/api/v1/users/{{guest_id}}"
+      }
+    },
+    {
+      "name": "24 Мягко удалить активность, 204",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{base_url}}/api/v1/trips/{{trip_id}}/activities/{{activity_id}}"
+      }
+    },
+    {
+      "name": "25 Активность скрыта, 404",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/v1/activities/{{activity_id}}"
+      }
+    },
+    {
+      "name": "26 Мягко удалить поездку, 204",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{base_url}}/api/v1/trips/{{trip_id}}"
+      }
+    },
+    {
+      "name": "27 Поездка скрыта, 404",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/v1/trips/{{trip_id}}"
+      }
+    },
+    {
+      "name": "28 Удалить владельца нельзя, 422",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{base_url}}/api/v1/users/{{owner_id}}"
+      }
+    }
+  ]
+}

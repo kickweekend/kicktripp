@@ -10,3 +10,4 @@
 .local/
 .idea/
 *.swp
+!**/Gemfile.lock

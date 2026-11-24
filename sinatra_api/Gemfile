@@ -8,6 +8,8 @@ gem "json"
 gem "erb" # Rack использует ERB; в Ruby 3.4 он устанавливается отдельным гемом.
 gem "rake"
 gem "dotenv"
+gem "tzinfo", "~> 2.0"
+gem "irb"
 gem "multi_json"
 # Подготовка состава зависимостей из конца методички №2, без подключения к БД.
 gem "pg", "~> 1.6"

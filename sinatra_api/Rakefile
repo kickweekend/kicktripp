@@ -1,11 +1,7 @@
 require "rake/testtask"
-
-# Классические примеры используют один Sinatra::Application, поэтому проверяем
-# их в отдельных Ruby-процессах, как и при реальном запуске разных приложений.
-%w[app classic modular].each do |example|
-  Rake::TestTask.new("test_#{example}") do |task|
-    task.pattern = "test/#{example}_test.rb"
-  end
+require_relative "lib/tasks/db"
+%w[api basics classic modular models].each do |name|
+  Rake::TestTask.new("test_#{name}") { |task| task.pattern = "test/#{name}_test.rb" }
 end
-task test: %i[test_app test_classic test_modular]
+task test: %i[test_api test_basics test_models test_classic test_modular]
 task default: :test

@@ -1,113 +1,81 @@
-# kicktripp — Sinatra, практическая №2
+# kicktripp — Sinatra REST API
 
-Это отдельное API на Sinatra. В нём изучаются маршруты, параметры запросов, namespace и запуск через Rack. Rails из первой работы работает отдельно.
+API планирования путешествий: те же сущности и основные операции, что в Rails-приложении, но на Sinatra + Sequel + PostgreSQL. Фронтенда нет: запросы отправляются из браузера, Postman или curl, ответы — JSON.
 
-**Данные пока демонстрационные, в памяти:** две поездки. PostgreSQL не подключается, поэтому поездки из Rails здесь не появятся. Создание и изменение записей на этом этапе не реализуются.
+**[Памятка для защиты: команды, создание, изменение и удаление](USAGE.md)**.
 
-## Запуск
+## Запуск в настроенном окружении
 
-Из папки `APIworks`:
+Из корня репозитория:
 
 ```bash
-cd project/sinatra_api
-bundle config set --local path vendor/bundle
-bundle install
+cd sinatra_api
 bundle exec rackup -o 127.0.0.1 -p 4567 config.ru
 ```
 
-При следующих запусках достаточно последней команды. Оставь терминал открытым. Остановка — `Ctrl+C`.
+Терминал оставьте открытым. Остановка — Ctrl+C. Откройте http://localhost:4567/api/v1/trips. Rails остаётся на порту 3000, Sinatra — на 4567. У них разные базы: изменения в одном приложении не изменяют данные другого.
 
-Открой в браузере: **http://localhost:4567/**, затем **http://localhost:4567/api/v1/trips**.
+## Первоначальная настройка / новая копия проекта
 
-Sinatra использует порт **4567**, Rails — **3000**. Их можно запускать одновременно в разных терминалах. Пароль БД и `.env` для второй работы не нужны.
-
-## Что показать на защите
-
-Каждый адрес можно открыть в браузере или отправить в Postman методом **GET**.
-
-| Адрес после http://localhost:4567 | Что показывает |
-|---|---|
-| `/` | JSON с названием kicktripp, фреймворком Sinatra и storage=demo |
-| `/hello/Alex` | Именованный параметр `params[:name]` |
-| `/hello-block/Maria` | Именованный параметр через аргумент блока |
-| `/redirect` | Перенаправление 302 на `/hello/World` |
-| `/meta/hello/world` | Параметр, захваченный регулярным выражением |
-| `/meta/hello/world/123` | Тот же regex-маршрут с дополнительным хвостом |
-| `/say/hello/to/world` | Маски splat: `{"parts":["hello","world"]}` |
-| `/download/path/to/file.xml` | Разбор пути и расширения: `{"path":"path/to/file","extension":"xml"}` |
-| `/demo/trips` | Маршрут без необязательного параметра |
-| `/demo/trips.json` | Тот же маршрут, format=json |
-| `/demo/trips.xml` | Тот же маршрут, format=xml; ответ всё равно JSON |
-| `/order/special` | Первый подходящий маршрут: `matched=specific` |
-| `/order/ordinary` | Общий маршрут с параметром: `matched=parameter` |
-| `/api/v1/trips` | Список двух поездок в namespace `/api/v1` |
-| `/api/v1/trips/1` | Одна демонстрационная поездка |
-| `/api/v1/trips/999` | JSON с ошибкой отсутствующей поездки, HTTP 404 |
-| `/api/v1/friends` | Маска внутри namespace, HTTP 404 |
-| `/friends` | Неизвестный адрес вне namespace, HTTP 404 |
-
-`/download/...` только разбирает адрес и не читает файлы с диска. Суффиксы json/xml в `/demo/trips` показывают работу необязательного параметра, а не переключают сериализацию на XML.
-
-Браузер и Postman обычно сами переходят по редиректу. Чтобы увидеть исходный код 302 в терминале:
+Установите Ruby 3.4.13, Bundler и PostgreSQL. Создайте роль и отдельные БД:
 
 ```bash
-curl -i http://localhost:4567/redirect
-curl -i http://localhost:4567/api/v1/trips
+sudo -u postgres createuser --login --no-superuser --no-createdb --no-createrole --pwprompt kicktripp_sinatra
+sudo -u postgres createdb -O kicktripp_sinatra kicktripp_sinatra_development
+sudo -u postgres createdb -O kicktripp_sinatra kicktripp_sinatra_test
 ```
 
-В Postman можно импортировать [коллекцию](../docs/kicktripp-sinatra.postman_collection.json), она настроена на порт 4567.
-
-## Два стиля приложения из методички
-
-Примеры запускаются по одному; останови предыдущий процесс через Ctrl+C, чтобы освободить порт.
-
-**Классический стиль**, один файл с `require "sinatra"`:
+В sinatra_api:
 
 ```bash
-bundle exec ruby examples/classic_app.rb
+bundle config set --local path vendor/bundle
+bundle install
+cp -n .env.example .env
 ```
 
-Либо тот же пример через Rack:
+Заполните пароль роли в PGPASSWORD локального .env. Этот файл не публикуется. Для существующего окружения повторно создавать роль и БД не нужно.
 
 ```bash
-bundle exec rackup -o 127.0.0.1 -p 4567 examples/classic.ru
-```
-
-**Модульный стиль**, класс `Kicktripp::ModularApp < Sinatra::Base`:
-
-```bash
-bundle exec rackup -o 127.0.0.1 -p 4567 examples/modular.ru
-```
-
-Его также можно запустить напрямую: `bundle exec ruby examples/modular_app.rb`.
-
-В каждом примере открой `/`, `/hello/Alex`, `/api/v1/hello/Maria`. Корневой ответ покажет `style=classic` или `style=modular`.
-
-Итоговое приложение `app.rb` следует заключительной части методички: классический стиль, `run Sinatra::Application` в `config.ru`, маршруты и другие файлы разнесены по каталогам. Примеры в `examples/` не загружаются вместе с ним.
-
-## Как устроен код
-
-- `app.rb` — подключение библиотек и загрузка файлов.
-- `config.ru` — точка запуска через Rack.
-- `config/settings.rb` — локальный адрес, порт и Puma.
-- `routes/01_basics.rb` — параметры, regex, splat, redirect и порядок маршрутов.
-- `routes/02_trips.rb` — namespace, список и отдельная поездка.
-- `models/demo_trips.rb` — демонстрационные данные, без ORM и БД.
-- `helpers/json_helpers.rb` — JSON и Content-Type.
-- `controllers/errors.rb` — обработчики ошибок.
-- `lib/` — место для служебных задач следующей работы.
-- `examples/` — отдельные примеры классического и модульного стилей.
-
-В Rails многое создаётся генератором: структура, контроллеры, модели, конфигурация БД. В Sinatra мы сами задаём структуру и пишем пары «HTTP-метод + путь → Ruby-блок». Rack передаёт запрос приложению, Puma принимает HTTP-соединения.
-
-В состав Gemfile включены pg, sequel и sequel-seed из конца методички. Они загружаются, но подключения к PostgreSQL нет. Миграции и реальные модели Sequel относятся к практической №3.
-
-## Проверка
-
-```bash
+bundle exec rake db:migrate
+APP_ENV=test bundle exec rake db:migrate
+bundle exec rake db:seed
+bundle exec rake db:version
 bundle exec rake test
 ```
 
-Тестируются основное приложение и оба стиля примеров. Каждый классический вариант проверяется в отдельном процессе, чтобы они не смешивали общий `Sinatra::Application`.
+## Что сделано
 
-Неизвестные адреса возвращают JSON и корректный HTTP 404. Защита Sinatra от недопустимого Host не отключена: используй `localhost` или `127.0.0.1`.
+- Модели User, Trip, Destination, Place, Activity, Expense, Participation и их связи.
+- CRUD, фильтрация, вложенные маршруты и бюджет /api/v1/trips/:id/summary.
+- Профили пользователей, заявки участников, read/invited.
+- Проверки дат, часовых поясов, валют, сумм и связей внутри поездки.
+- Soft delete поездок и активностей, JSON-ошибки 400/404/422.
+- Миграции Sequel, rake-задачи, timestamps, datasets, seeds через sequel-seed с историей schema_seeds.
+
+Список маршрутов и примеры — в [памятке](USAGE.md). [Коллекция полного API для Postman](../docs/kicktripp-sinatra-rest.postman_collection.json) создаёт отдельные записи для демонстрации и сохраняет их ID в переменных коллекции. Старая коллекция второй работы остаётся для упражнений с маршрутами.
+
+## Структура
+
+- app.rb, config.ru — загрузка и запуск Sinatra::Application.
+- config/database.rb — отдельное подключение PostgreSQL из .env.
+- models/ — модели Sequel::Model, ассоциации и валидации.
+- db/migrations/ — создание таблиц и отдельная миграция deleted.
+- seeds/ — файлы с возрастающими датами: очистка и заполнение связанных таблиц.
+- lib/tasks/db.rb — migrate/version/rollback/reset/seed/datasets.
+- routes/ — явные GET/POST/PUT/PATCH/DELETE блоки по ресурсам.
+- helpers/ — JSON, разрешённые входные поля, поиск записей внутри родителя.
+- controllers/errors.rb — обработчики ошибок.
+- examples/ — классический и модульный однофайловые примеры из работы №2; не требуют БД.
+- test/ — REST-сценарии, ограничения БД, основы маршрутизации и оба примера.
+
+Проверка второго этапа сохранена до изменений: [тег sinatra-basics](https://github.com/kickweekend/kicktripp/tree/sinatra-basics). Теперь основное приложение работает с PostgreSQL, а не с массивом demo-данных.
+
+## Данные и ограничения
+
+Seeds: три пользователя, две поездки, два направления, место, две активности, расход 1000 JPY и три заявки с разными read/invited. Каждый seed-файл применяется один раз; повторный db:seed сохраняет пользовательские изменения. Принудительное пересоздание демонстрационных данных описано отдельно в памятке и удаляет текущие данные Sinatra.
+
+Денежные поля numeric(14,2), суммы в JSON — строки. Валюта расходов совпадает с поездкой; конвертации нет. Даты и время проверяются в IANA-часовом поясе поездки; входное время ISO 8601 обязательно содержит Z или смещение. Сохраняется UTC.
+
+API локальный, без аутентификации и разграничения ролей. Конкурентные изменения разных ресурсов не защищены общей блокировкой поездки — как и в текущем Rails API. Гарантии связей в БД обеспечивают внешние ключи и ограничения. Production-развёртывание и GraphQL не реализованы.
+
+Проверено: 31 тест, 303 утверждения; 28 сценариев коллекции прошли через настоящий HTTP на test-БД.

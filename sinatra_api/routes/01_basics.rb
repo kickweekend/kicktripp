@@ -1,5 +1,7 @@
+get("/up") { json_response(status: "ok") }
+
 get "/" do
-  json_response(service: "kicktripp", framework: "Sinatra", storage: "demo", trips_url: "/api/v1/trips")
+  json_response(service: "kicktripp", framework: "Sinatra", storage: "postgresql", trips_url: "/api/v1/trips")
 end
 
 get "/hello/:name" do
