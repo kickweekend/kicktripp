@@ -1,0 +1,11 @@
+require "rake/testtask"
+
+# Классические примеры используют один Sinatra::Application, поэтому проверяем
+# их в отдельных Ruby-процессах, как и при реальном запуске разных приложений.
+%w[app classic modular].each do |example|
+  Rake::TestTask.new("test_#{example}") do |task|
+    task.pattern = "test/#{example}_test.rb"
+  end
+end
+task test: %i[test_app test_classic test_modular]
+task default: :test

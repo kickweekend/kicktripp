@@ -1,0 +1,143 @@
+{
+  "info": {
+    "name": "kicktripp Sinatra routing",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Запустите основное Sinatra-приложение на 4567. Только GET, демонстрационные данные без БД."
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4567"
+    }
+  ],
+  "item": [
+    {
+      "name": "Сервис",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/"
+      }
+    },
+    {
+      "name": "Именованный параметр",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/hello/Alex"
+      }
+    },
+    {
+      "name": "Аргумент блока",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/hello-block/Maria"
+      }
+    },
+    {
+      "name": "Редирект",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/redirect"
+      }
+    },
+    {
+      "name": "Регулярное выражение",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/meta/hello/world/123"
+      }
+    },
+    {
+      "name": "Splat",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/say/hello/to/world"
+      }
+    },
+    {
+      "name": "Путь и расширение",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/download/path/to/file.xml"
+      }
+    },
+    {
+      "name": "Без формата",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/demo/trips"
+      }
+    },
+    {
+      "name": "Формат JSON",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/demo/trips.json"
+      }
+    },
+    {
+      "name": "Формат XML как параметр",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/demo/trips.xml"
+      }
+    },
+    {
+      "name": "Приоритет маршрутов",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/order/special"
+      }
+    },
+    {
+      "name": "Список поездок",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/v1/trips"
+      }
+    },
+    {
+      "name": "Одна поездка",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/v1/trips/1"
+      }
+    },
+    {
+      "name": "Нет поездки, 404",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/v1/trips/999"
+      }
+    },
+    {
+      "name": "Маска namespace, 404",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/v1/friends"
+      }
+    },
+    {
+      "name": "Неизвестный адрес, 404",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/friends"
+      }
+    }
+  ]
+}
