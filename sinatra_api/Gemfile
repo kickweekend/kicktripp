@@ -11,7 +11,7 @@ gem "dotenv"
 gem "tzinfo", "~> 2.0"
 gem "irb"
 gem "multi_json"
-# Подготовка состава зависимостей из конца методички №2, без подключения к БД.
+# PostgreSQL, Sequel ORM и последовательные seed-файлы.
 gem "pg", "~> 1.6"
 gem "sequel", "~> 5.0"
 gem "sequel-seed"
